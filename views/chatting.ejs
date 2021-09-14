@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../stylesheets/chat.css">
+    <link rel="stylesheet" href="../stylesheets/style.css">
+</head>
+<body>
+    <div id="back">
+        <div id="panel">
+            <div id="online">
+                <h3>Online Users</h3>
+                <hr>
+                <div id="onlinelist">
+                    
+                </div>
+            </div>
+            <div id="messagebar">
+                <div id="overlay">
+                    <div id="msgpanel">
+                        
+                    </div>
+                    <div id="form">
+                        <textarea name="msg" placeholder="Type your message here."></textarea>
+                        <input type="checkbox" id="check">
+                        <div id="btn">
+                            <i class="ri-send-plane-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="particle-canvas"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"></script>
+    <script src="../javascripts/script.js"></script>
+    <script>
+        var socket = io();
+
+        var textarea = document.querySelector('textarea');
+        var btn = document.querySelector('#btn');
+        var check = document.querySelector('#check');
+        var usernaam = new URL(window.location.href);
+        usernaam = usernaam.searchParams.get("username");
+
+        socket.emit('onlineUser', usernaam);
+
+        textarea.addEventListener('keypress', function(e){
+            if(e.charCode === 13 && check.checqked){
+                e.preventDefault();
+                socket.emit('msg', textarea.value);
+                textarea.value = '';
+            }
+        })
+
+        btn.addEventListener('click', function(e){
+            socket.emit('msg', textarea.value);
+            textarea.value = '';
+        })
+
+        socket.on('msgsent', function(data){
+            document.querySelector('#msgpanel').innerHTML +=
+            `<div class="msg">
+                ${data}
+            </div>`
+        })
+
+
+
+        socket.on('loggedUser', function(allUsers){
+            var useronlinetemplate = '';
+            for(x in allUsers){
+                useronlinetemplate += `<div class="user">${allUsers[x]}</div>`
+            }
+            document.querySelector('#onlinelist').innerHTML = '';
+            document.querySelector('#onlinelist').innerHTML = useronlinetemplate;
+        })
+
+        textarea.addEventListener('input', function(){
+            socket.emit('broadcast');
+        })
+
+        socket.on('istyping', function(message){
+            console.log('istyping');
+            console.clear(setTimeout(500))
+        });
+
+    </script>
+</body>
+</html>

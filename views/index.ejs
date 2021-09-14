@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <h4>Welcome to ChatterBox</h4>
+    <div id="login">
+        <h4 id="loginHead">Enter Your Username Here</h4>
+        <form action="/chat" method="GET">
+          <input type="text" id="username" name="username" placeholder="username">
+          <button id="btn">
+            Continue
+          </button>
+      </form>
+    </div>
+    
+    <div id="particle-canvas"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"></script>
+    <script src="../javascripts/script.js"></script>
+    <script>
+      var socket = io();  
+
+      var username = document.querySelector('#username');
+      var btn = document.querySelector('#btn');
+
+
+      btn.addEventListener('click', function(){
+        socket.emit('login',{userID: username.value});
+      })
+
+    </script>
+</body>
+</html>
